@@ -47,34 +47,31 @@ interface FORWARD_REF_STATICS {
     propTypes: true;
 }
 
-declare namespace hoistNonReactStatics {
-    type NonReactStatics<
-        S extends React.ComponentType<any>,
-        C extends {
-            [key: string]: true
-        } = {}
-    > = {
-        [key in Exclude<
-            keyof S,
-            S extends React.MemoExoticComponent<any>
-                ? keyof MEMO_STATICS | keyof C
-                : S extends React.ForwardRefExoticComponent<any>
-                ? keyof FORWARD_REF_STATICS | keyof C
-                : keyof REACT_STATICS | keyof KNOWN_STATICS | keyof C
-        >]: S[key]
-    };
-}
 
-declare function hoistNonReactStatics<
+export type NonReactStatics<
+    S extends React.ComponentType<any>,
+    C extends {
+        [key: string]: true
+    } = {}
+> = {
+    [key in Exclude<
+        keyof S,
+        S extends React.MemoExoticComponent<any>
+            ? keyof MEMO_STATICS | keyof C
+            : S extends React.ForwardRefExoticComponent<any>
+            ? keyof FORWARD_REF_STATICS | keyof C
+            : keyof REACT_STATICS | keyof KNOWN_STATICS | keyof C
+    >]: S[key]
+};
+
+export type hoistNonReactStatics<
     T extends React.ComponentType<any>,
     S extends React.ComponentType<any>,
     C extends {
         [key: string]: true
     } = {}
->(
+> = (
     TargetComponent: T,
     SourceComponent: S,
     customStatic?: C,
-): T & hoistNonReactStatics.NonReactStatics<S, C>;
-
-export = hoistNonReactStatics;
+) => T & NonReactStatics<S, C>;
